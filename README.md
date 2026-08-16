@@ -1,8 +1,10 @@
-# glucose-log v0.1 — GitHub Pages
+# glucose-log v0.2 — GitHub Pages
 
 아빠가 휴대폰에서 간단히 쓰는 1인용 혈당 기록 웹앱입니다.
 
 ## 기능
+
+- 현재 보고 있는 월의 혈당 기록을 Excel에서 바로 열 수 있는 Excel (.xlsx)로 내보내기
 - Supabase 이메일/비밀번호 로그인 및 로그인 유지
 - 월간 달력형 화면
 - 날짜 클릭 → 아침 식전 / 저녁 식전 혈당 입력
@@ -36,3 +38,6 @@ Netlify는 사용하지 않습니다.
 
 ## Supabase
 앱에는 Publishable key만 들어 있습니다. `sb_secret_...` Secret key는 절대 프론트엔드 코드에 넣지 마세요.
+
+
+- 현재 보고 있는 월을 `.xlsx` 엑셀 파일로 내보내기

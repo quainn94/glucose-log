@@ -40,7 +40,7 @@
     <div><span class="dot morningDot"></span>아침 식전 <strong>80–120</strong></div>
     <div><span class="dot eveningDot"></span>저녁 식전 <strong>100–150</strong></div>
   </section>
-  <div class="utilityRow"><button id="exportExcel" class="exportButton">↓ 엑셀로 내보내기</button></div>
+  <div class="utilityRow"><button id="exportExcel" class="exportButton">↗ 엑셀 열기</button></div>
 
   <section class="calendarCard">
     <div class="monthHeader">
@@ -132,7 +132,7 @@ function statusText(value, min, max){
   return '목표 범위'
 }
 
-function exportCurrentMonth(){
+async function exportCurrentMonth(){
   const y=viewDate.getFullYear(), m=viewDate.getMonth(), days=new Date(y,m+1,0).getDate()
   const rows=[['날짜','아침 식전 (mg/dL)','아침 판정','저녁 식전 (mg/dL)','저녁 판정']]
   for(let d=1; d<=days; d++){
@@ -147,7 +147,31 @@ function exportCurrentMonth(){
 
   const wb=XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(wb,ws,`${m+1}월 혈당`)
-  XLSX.writeFile(wb,`혈당기록_${y}-${pad(m+1)}.xlsx`)
+
+  const fileName=`혈당기록_${y}-${pad(m+1)}.xlsx`
+  const array=XLSX.write(wb,{bookType:'xlsx',type:'array'})
+  const file=new File([array],fileName,{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
+
+  // Android Chrome/PWA에서는 공유 시트를 열어 Excel/Sheets 같은 앱으로 바로 넘긴다.
+  if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+    try{
+      await navigator.share({files:[file],title:`${y}년 ${m+1}월 혈당 기록`})
+      return
+    }catch(err){
+      if(err?.name==='AbortError') return
+    }
+  }
+
+  // 공유 기능을 지원하지 않는 환경에서는 일반 다운로드로 자동 전환.
+  const url=URL.createObjectURL(file)
+  const a=document.createElement('a')
+  a.href=url
+  a.download=fileName
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  setTimeout(()=>URL.revokeObjectURL(url),1500)
+  alert('엑셀 파일을 다운로드했어요. 다운로드 알림에서 파일을 눌러 열어 주세요.')
 }
 
 function pill(label,value,good){

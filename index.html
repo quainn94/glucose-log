@@ -71,7 +71,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <script>
 const SUPABASE_URL = 'https://rxmakrkxtrlwnqsnqcwk.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_m3sXDxPUJ83N6JN1LQpnFQ_ho9fdoBP'
@@ -125,34 +125,96 @@ async function loadMonth(){
 }
 
 
-function statusText(value, min, max){
-  if(value==null) return ''
-  if(value < min) return '목표 미만'
-  if(value > max) return '목표 초과'
-  return '목표 범위'
-}
-
 async function exportCurrentMonth(){
   const y=viewDate.getFullYear(), m=viewDate.getMonth(), days=new Date(y,m+1,0).getDate()
-  const rows=[['날짜','아침 식전 (mg/dL)','아침 판정','저녁 식전 (mg/dL)','저녁 판정']]
-  for(let d=1; d<=days; d++){
-    const key=dateKey(y,m,d), r=records.get(key)
-    const mv=r?.morning_glucose ?? null, ev=r?.evening_glucose ?? null
-    rows.push([key, mv ?? '', statusText(mv,80,120), ev ?? '', statusText(ev,100,150)])
+  const workbook=new ExcelJS.Workbook()
+  workbook.creator='Glucose Log'
+  workbook.created=new Date()
+  const ws=workbook.addWorksheet(`${m+1}월 혈당`,{
+    views:[{state:'frozen',ySplit:4,showGridLines:false}]
+  })
+
+  // 한 화면에 들어오는 달력형 엑셀: 7열 × 주차별 3행(날짜/아침/저녁)
+  ws.mergeCells('A1:G1')
+  const title=ws.getCell('A1')
+  title.value=`${y}년 ${m+1}월 혈당 기록`
+  title.font={bold:true,size:18}
+  title.alignment={horizontal:'center',vertical:'middle'}
+  ws.getRow(1).height=28
+
+  ws.mergeCells('A2:G2')
+  const guide=ws.getCell('A2')
+  guide.value='아침 식전 80–120 mg/dL   ·   저녁 식전 100–150 mg/dL'
+  guide.font={size:10,color:{argb:'FF666666'}}
+  guide.alignment={horizontal:'center',vertical:'middle'}
+  ws.getRow(2).height=20
+
+  const weekdays=['월','화','수','목','금','토','일']
+  weekdays.forEach((v,i)=>{
+    const c=ws.getCell(4,i+1)
+    c.value=v
+    c.font={bold:true}
+    c.alignment={horizontal:'center',vertical:'middle'}
+    c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFE9EEF3'}}
+    c.border={bottom:{style:'thin',color:{argb:'FFB7C0C8'}}}
+  })
+  ws.getRow(4).height=22
+  for(let i=1;i<=7;i++) ws.getColumn(i).width=14
+
+  const green='FFE2F0D9', red='FFF4CCCC', gray='FFF2F2F2', white='FFFFFFFF', dateFill='FFF7F9FB'
+  const border={
+    top:{style:'thin',color:{argb:'FFD9DEE3'}},
+    left:{style:'thin',color:{argb:'FFD9DEE3'}},
+    bottom:{style:'thin',color:{argb:'FFD9DEE3'}},
+    right:{style:'thin',color:{argb:'FFD9DEE3'}}
+  }
+  const firstDay=(new Date(y,m,1).getDay()+6)%7 // 월=0
+  const weekCount=Math.ceil((firstDay+days)/7)
+
+  for(let w=0; w<weekCount; w++){
+    const dateRow=5+w*3, morningRow=dateRow+1, eveningRow=dateRow+2
+    ws.getRow(dateRow).height=21
+    ws.getRow(morningRow).height=25
+    ws.getRow(eveningRow).height=25
+
+    for(let col=0; col<7; col++){
+      const d=w*7+col-firstDay+1
+      const dc=ws.getCell(dateRow,col+1)
+      const mc=ws.getCell(morningRow,col+1)
+      const ec=ws.getCell(eveningRow,col+1)
+      for(const c of [dc,mc,ec]){
+        c.alignment={horizontal:'center',vertical:'middle'}
+        c.border=border
+      }
+
+      if(d<1 || d>days){
+        dc.value=''; mc.value=''; ec.value=''
+        dc.fill=mc.fill=ec.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
+        continue
+      }
+
+      const key=dateKey(y,m,d), r=records.get(key)
+      const mv=r?.morning_glucose ?? null, ev=r?.evening_glucose ?? null
+      dc.value=d
+      dc.font={bold:true,size:10,color:{argb:'FF555555'}}
+      dc.fill={type:'pattern',pattern:'solid',fgColor:{argb:dateFill}}
+
+      mc.value=mv==null ? '아침 —' : `아침 ${mv}`
+      ec.value=ev==null ? '저녁 —' : `저녁 ${ev}`
+      mc.font=ec.font={bold:true,size:11,color:{argb:'FF222222'}}
+      mc.fill={type:'pattern',pattern:'solid',fgColor:{argb:mv==null?gray:(mv>=80&&mv<=120?green:red)}}
+      ec.fill={type:'pattern',pattern:'solid',fgColor:{argb:ev==null?gray:(ev>=100&&ev<=150?green:red)}}
+    }
   }
 
-  const ws=XLSX.utils.aoa_to_sheet(rows)
-  ws['!cols']=[{wch:13},{wch:20},{wch:13},{wch:20},{wch:13}]
-  ws['!autofilter']={ref:`A1:E${rows.length}`}
-
-  const wb=XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb,ws,`${m+1}월 혈당`)
+  ws.pageSetup={orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:1,paperSize:9,
+    margins:{left:0.25,right:0.25,top:0.4,bottom:0.4,header:0.2,footer:0.2}}
+  ws.headerFooter.oddFooter='&C혈당 기록'
 
   const fileName=`혈당기록_${y}-${pad(m+1)}.xlsx`
-  const array=XLSX.write(wb,{bookType:'xlsx',type:'array'})
+  const array=await workbook.xlsx.writeBuffer()
   const file=new File([array],fileName,{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
 
-  // Android Chrome/PWA에서는 공유 시트를 열어 Excel/Sheets 같은 앱으로 바로 넘긴다.
   if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
     try{
       await navigator.share({files:[file],title:`${y}년 ${m+1}월 혈당 기록`})
@@ -162,7 +224,6 @@ async function exportCurrentMonth(){
     }
   }
 
-  // 공유 기능을 지원하지 않는 환경에서는 일반 다운로드로 자동 전환.
   const url=URL.createObjectURL(file)
   const a=document.createElement('a')
   a.href=url

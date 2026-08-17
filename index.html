@@ -141,18 +141,18 @@ async function exportCurrentMonth(){
   ws.mergeCells('B1:I1')
   const title=ws.getCell('B1')
   title.value=`- 혈당 기록 (${y}년 ${m+1}월) -`
-  title.font={bold:true,size:18,color:{argb:'FF111111'}}
+  title.font={bold:true,size:20,color:{argb:'FF111111'}}
   title.alignment={horizontal:'center',vertical:'middle'}
   ws.getRow(1).height=30
 
   ws.mergeCells('B3:I3')
   const guide=ws.getCell('B3')
   guide.value='아침 식전 80–120 mg/dL  ·  저녁 식전 100–150 mg/dL'
-  guide.font={bold:true,size:12,color:{argb:'FFFF0000'}}
+  guide.font={bold:true,size:15,color:{argb:'FFFF0000'}}
   guide.alignment={horizontal:'center',vertical:'middle'}
   ws.getRow(3).height=24
 
-  const headerRow=6
+  const headerRow=5
   const headers=['구분','월','화','수','목','금','토','일']
   const headerFill='FFD9EAF7'
   const dateFill='FFE8DCF2'
@@ -165,7 +165,7 @@ async function exportCurrentMonth(){
   headers.forEach((v,i)=>{
     const c=ws.getCell(headerRow,i+2)
     c.value=v
-    c.font={bold:true,size:12,color:{argb:'FF111111'}}
+    c.font={bold:true,size:15,color:{argb:'FF111111'}}
     c.alignment={horizontal:'center',vertical:'middle'}
     c.fill={type:'pattern',pattern:'solid',fgColor:{argb:headerFill}}
     c.border={top:medium,bottom:medium,left:i===0?medium:thin,right:i===7?medium:thin}
@@ -189,16 +189,26 @@ async function exportCurrentMonth(){
     }
   }
 
+  // 헤더 바로 아래부터, 각 주차 앞에 10px 간격행을 둔다.
+  // headerRow=5 기준: 6,10,14,18,22,26행이 주차 시작 간격행이며,
+  // 마지막 주차 뒤 30행도 같은 간격행으로 마감된다(2026년 8월처럼 6주인 달 기준).
   for(let w=0; w<weekCount; w++){
-    const dateRow=headerRow+1+w*4
+    const spacerRow=headerRow+1+w*4
+    const dateRow=spacerRow+1
     const morningRow=dateRow+1
     const eveningRow=dateRow+2
-    const spacerRow=dateRow+3
 
+    ws.getRow(spacerRow).height=10
     ws.getRow(dateRow).height=23
     ws.getRow(morningRow).height=25
     ws.getRow(eveningRow).height=25
-    ws.getRow(spacerRow).height=9
+
+    // 주차 앞 간격행: 표 내부 8칸을 한 칸으로 병합
+    ws.mergeCells(spacerRow,2,spacerRow,9)
+    const spacer=ws.getCell(spacerRow,2)
+    spacer.value=''
+    spacer.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
+    spacer.border={top:thin,bottom:medium,left:medium,right:medium}
 
     const dateLabel=ws.getCell(dateRow,2)
     dateLabel.value=''
@@ -273,20 +283,23 @@ async function exportCurrentMonth(){
       blank.border={top:medium,bottom:medium,left:medium,right:medium}
     }
 
-    // 주차 사이 간격행: 흰색 좁은 띠 + 외곽선
-    ws.mergeCells(spacerRow,2,spacerRow,9)
-    const spacer=ws.getCell(spacerRow,2)
-    spacer.value=''
-    spacer.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
-    spacer.border={top:thin,bottom:medium,left:medium,right:medium}
   }
+
+  // 마지막 주차 뒤에도 동일한 10px 병합 간격행을 하나 둔다.
+  const finalSpacerRow=headerRow+1+weekCount*4
+  ws.getRow(finalSpacerRow).height=10
+  ws.mergeCells(finalSpacerRow,2,finalSpacerRow,9)
+  const finalSpacer=ws.getCell(finalSpacerRow,2)
+  finalSpacer.value=''
+  finalSpacer.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
+  finalSpacer.border={top:thin,bottom:medium,left:medium,right:medium}
 
   ws.pageSetup={
     orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:1,paperSize:9,
     horizontalCentered:true,
     margins:{left:0.25,right:0.25,top:0.35,bottom:0.35,header:0.15,footer:0.15}
   }
-  ws.printArea=`B1:I${headerRow+weekCount*4}`
+  ws.printArea=`B1:I${finalSpacerRow}`
 
   const fileName=`혈당기록_${y}-${pad(m+1)}.xlsx`
   const array=await workbook.xlsx.writeBuffer()

@@ -161,6 +161,7 @@ async function exportCurrentMonth(){
   const borderColor='FF111111'
   const thin={style:'thin',color:{argb:borderColor}}
   const medium={style:'medium',color:{argb:borderColor}}
+  const thick={style:'thick',color:{argb:borderColor}}
 
   headers.forEach((v,i)=>{
     const c=ws.getCell(headerRow,i+2)
@@ -198,7 +199,7 @@ async function exportCurrentMonth(){
     const morningRow=dateRow+1
     const eveningRow=dateRow+2
 
-    ws.getRow(spacerRow).height=10
+    ws.getRow(spacerRow).height=7.5
     ws.getRow(dateRow).height=23
     ws.getRow(morningRow).height=25
     ws.getRow(eveningRow).height=25
@@ -216,13 +217,13 @@ async function exportCurrentMonth(){
 
     const labelMorning=ws.getCell(morningRow,2)
     labelMorning.value='아침'
-    labelMorning.font={bold:true,size:12,color:{argb:'FF111111'}}
+    labelMorning.font={bold:true,size:15,color:{argb:'FF111111'}}
     labelMorning.alignment={horizontal:'center',vertical:'middle'}
     labelMorning.fill={type:'pattern',pattern:'solid',fgColor:{argb:morningFill}}
 
     const labelEvening=ws.getCell(eveningRow,2)
     labelEvening.value='저녁'
-    labelEvening.font={bold:true,size:12,color:{argb:'FF111111'}}
+    labelEvening.font={bold:true,size:15,color:{argb:'FF111111'}}
     labelEvening.alignment={horizontal:'center',vertical:'middle'}
     labelEvening.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
 
@@ -244,11 +245,11 @@ async function exportCurrentMonth(){
         const key=dateKey(y,m,d), r=records.get(key)
         const mv=r?.morning_glucose ?? null, ev=r?.evening_glucose ?? null
         dc.value=d
-        dc.font={bold:true,size:12,color:{argb:'FF111111'}}
+        dc.font={bold:true,size:15,color:{argb:'FF111111'}}
         mc.value=mv==null ? '' : mv
         ec.value=ev==null ? '' : ev
-        if(mv!=null) mc.font={bold:true,size:12,color:{argb:inMorning(mv)?'FF1E7A34':'FFFF0000'}}
-        if(ev!=null) ec.font={bold:true,size:12,color:{argb:inEvening(ev)?'FF1E7A34':'FFFF0000'}}
+        if(mv!=null) mc.font={bold:true,size:15,color:{argb:inMorning(mv)?'FF1E7A34':'FFFF0000'}}
+        if(ev!=null) ec.font={bold:true,size:15,color:{argb:inEvening(ev)?'FF1E7A34':'FFFF0000'}}
       }else{
         dc.value=''; mc.value=''; ec.value=''
         dc.fill=mc.fill=ec.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
@@ -287,12 +288,27 @@ async function exportCurrentMonth(){
 
   // 마지막 주차 뒤에도 동일한 10px 병합 간격행을 하나 둔다.
   const finalSpacerRow=headerRow+1+weekCount*4
-  ws.getRow(finalSpacerRow).height=10
+  ws.getRow(finalSpacerRow).height=7.5
   ws.mergeCells(finalSpacerRow,2,finalSpacerRow,9)
   const finalSpacer=ws.getCell(finalSpacerRow,2)
   finalSpacer.value=''
   finalSpacer.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
   finalSpacer.border={top:thin,bottom:medium,left:medium,right:medium}
+
+  // 표 전체 최외곽은 가장 굵은(thick) 테두리, 각 주차 블록 외곽은 medium 유지
+  const tableTop=headerRow, tableBottom=finalSpacerRow, tableLeft=2, tableRight=9
+  for(let r=tableTop;r<=tableBottom;r++){
+    for(let c=tableLeft;c<=tableRight;c++){
+      const cell=ws.getCell(r,c)
+      const b=cell.border||{}
+      cell.border={
+        top:r===tableTop?thick:b.top,
+        bottom:r===tableBottom?thick:b.bottom,
+        left:c===tableLeft?thick:b.left,
+        right:c===tableRight?thick:b.right
+      }
+    }
+  }
 
   ws.pageSetup={
     orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:1,paperSize:9,

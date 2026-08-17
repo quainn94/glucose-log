@@ -172,20 +172,19 @@ async function exportCurrentMonth(){
   const ws=workbook.addWorksheet(`${m+1}월 혈당`,{views:[{showGridLines:false,zoomScale:100}]})
 
   // 사용자가 원하는 월간 기록표 모양 그대로: 제목 + 목표범위 + 주차별 날짜/아침/저녁 + 간격행
-  // A열은 여백으로 두고 B:I에 표를 배치한다.
-  ws.getColumn(1).width=3
-  ws.getColumn(2).width=9.5
-  for(let i=3;i<=9;i++) ws.getColumn(i).width=13.5
+  // 표는 A:H에 바로 배치하고, 좌우 여백은 인쇄 페이지 여백으로만 맞춘다.
+  ws.getColumn(1).width=9.5
+  for(let i=2;i<=8;i++) ws.getColumn(i).width=13.5
 
-  ws.mergeCells('B1:I1')
-  const title=ws.getCell('B1')
+  ws.mergeCells('A1:H1')
+  const title=ws.getCell('A1')
   title.value=`- 혈당 기록 (${y}년 ${m+1}월) -`
   title.font={bold:true,size:20,color:{argb:'FF111111'}}
   title.alignment={horizontal:'center',vertical:'middle'}
   ws.getRow(1).height=30
 
-  ws.mergeCells('B3:I3')
-  const guide=ws.getCell('B3')
+  ws.mergeCells('A3:H3')
+  const guide=ws.getCell('A3')
   guide.value='아침 식전 80–120 mg/dL  ·  저녁 식전 100–150 mg/dL'
   guide.font={bold:true,size:15,color:{argb:'FFFF0000'}}
   guide.alignment={horizontal:'center',vertical:'middle'}
@@ -203,7 +202,7 @@ async function exportCurrentMonth(){
   const thick={style:'thick',color:{argb:borderColor}}
 
   headers.forEach((v,i)=>{
-    const c=ws.getCell(headerRow,i+2)
+    const c=ws.getCell(headerRow,i+1)
     c.value=v
     c.font={bold:true,size:15,color:{argb:'FF111111'}}
     c.alignment={horizontal:'center',vertical:'middle'}
@@ -244,23 +243,23 @@ async function exportCurrentMonth(){
     ws.getRow(eveningRow).height=25
 
     // 주차 앞 간격행: 표 내부 8칸을 한 칸으로 병합
-    ws.mergeCells(spacerRow,2,spacerRow,9)
-    const spacer=ws.getCell(spacerRow,2)
+    ws.mergeCells(spacerRow,1,spacerRow,8)
+    const spacer=ws.getCell(spacerRow,1)
     spacer.value=''
     spacer.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
     spacer.border={top:thin,bottom:medium,left:thick,right:thick}
 
-    const dateLabel=ws.getCell(dateRow,2)
+    const dateLabel=ws.getCell(dateRow,1)
     dateLabel.value=''
     dateLabel.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
 
-    const labelMorning=ws.getCell(morningRow,2)
+    const labelMorning=ws.getCell(morningRow,1)
     labelMorning.value='아침'
     labelMorning.font={bold:true,size:15,color:{argb:'FF111111'}}
     labelMorning.alignment={horizontal:'center',vertical:'middle'}
     labelMorning.fill={type:'pattern',pattern:'solid',fgColor:{argb:morningFill}}
 
-    const labelEvening=ws.getCell(eveningRow,2)
+    const labelEvening=ws.getCell(eveningRow,1)
     labelEvening.value='저녁'
     labelEvening.font={bold:true,size:15,color:{argb:'FF111111'}}
     labelEvening.alignment={horizontal:'center',vertical:'middle'}
@@ -268,7 +267,7 @@ async function exportCurrentMonth(){
 
     // 실제 날짜가 들어가는 칸
     for(let col=0; col<7; col++){
-      const excelCol=col+3
+      const excelCol=col+2
       const d=w*7+col-firstDay+1
       const dc=ws.getCell(dateRow,excelCol)
       const mc=ws.getCell(morningRow,excelCol)
@@ -296,12 +295,12 @@ async function exportCurrentMonth(){
     }
 
     // 기본 표 테두리: 주간 블록 외곽은 medium, 내부선은 thin
-    applyBlockBorder(dateRow,2,eveningRow,9)
+    applyBlockBorder(dateRow,1,eveningRow,8)
     // 전체 월간표 가장 바깥 좌/우 테두리는 thick
     for(let rr=dateRow; rr<=eveningRow; rr++){
-      const leftCell=ws.getCell(rr,2)
+      const leftCell=ws.getCell(rr,1)
       leftCell.border={...leftCell.border,left:thick}
-      const rightCell=ws.getCell(rr,9)
+      const rightCell=ws.getCell(rr,8)
       rightCell.border={...rightCell.border,right:thick}
     }
 
@@ -310,20 +309,20 @@ async function exportCurrentMonth(){
     for(let col=0; col<7; col++){
       const d=w*7+col-firstDay+1
       if(d>=1 && d<=days){
-        const ec=col+3
+        const ec=col+2
         if(firstValidCol==null) firstValidCol=ec
         lastValidCol=ec
       }
     }
-    if(firstValidCol!=null && firstValidCol>3){
-      ws.mergeCells(dateRow,3,eveningRow,firstValidCol-1)
-      const blank=ws.getCell(dateRow,3)
+    if(firstValidCol!=null && firstValidCol>2){
+      ws.mergeCells(dateRow,2,eveningRow,firstValidCol-1)
+      const blank=ws.getCell(dateRow,2)
       blank.value=''
       blank.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
       blank.border={top:medium,bottom:medium,left:thin,right:medium}
     }
-    if(lastValidCol!=null && lastValidCol<9){
-      ws.mergeCells(dateRow,lastValidCol+1,eveningRow,9)
+    if(lastValidCol!=null && lastValidCol<8){
+      ws.mergeCells(dateRow,lastValidCol+1,eveningRow,8)
       const blank=ws.getCell(dateRow,lastValidCol+1)
       blank.value=''
       blank.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
@@ -335,8 +334,8 @@ async function exportCurrentMonth(){
   // 마지막 주차 뒤에도 동일한 10px(7.5pt) 병합 간격행을 하나 둔다.
   const finalSpacerRow=headerRow+1+weekCount*4
   ws.getRow(finalSpacerRow).height=7.5
-  ws.mergeCells(finalSpacerRow,2,finalSpacerRow,9)
-  const finalSpacer=ws.getCell(finalSpacerRow,2)
+  ws.mergeCells(finalSpacerRow,1,finalSpacerRow,8)
+  const finalSpacer=ws.getCell(finalSpacerRow,1)
   finalSpacer.value=''
   finalSpacer.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
   finalSpacer.border={top:thin,bottom:thick,left:thick,right:thick}
@@ -344,9 +343,9 @@ async function exportCurrentMonth(){
   ws.pageSetup={
     orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:1,paperSize:9,
     horizontalCentered:true,verticalCentered:false,
-    margins:{left:0.20,right:0.50,top:1.25,bottom:0.35,header:0.15,footer:0.15}
+    margins:{left:0.3543,right:0.3543,top:1.25,bottom:0.35,header:0.15,footer:0.15}
   }
-  ws.printArea=`B1:I${finalSpacerRow}`
+  ws.printArea=`A1:H${finalSpacerRow}`
 
   const fileName=`혈당기록_${y}-${pad(m+1)}.xlsx`
   const array=await workbook.xlsx.writeBuffer()

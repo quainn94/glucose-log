@@ -1,55 +1,30 @@
-# glucose-log v0.2 — GitHub Pages
+# glucose-log v0.2.4 — GitHub Pages
 
 아빠가 휴대폰에서 간단히 쓰는 1인용 혈당 기록 웹앱입니다.
 
 ## 기능
-
-- 현재 보고 있는 월의 혈당 기록을 Excel에서 바로 열 수 있는 Excel (.xlsx)로 내보내기
 - Supabase 이메일/비밀번호 로그인 및 로그인 유지
-- 월간 달력형 화면
-- 날짜 클릭 → 아침 식전 / 저녁 식전 혈당 입력
-- 입력된 날짜 재클릭 → 기존 수치 수정
+- 월간 달력형 혈당 기록
+- 날짜 클릭 → 아침 식전 / 저녁 식전 혈당 입력 및 수정
 - 아침 식전 목표 80~120 mg/dL
 - 저녁 식전 목표 100~150 mg/dL
-- 목표 범위 내 초록 / 범위 밖 빨강 / 미측정 회색
-- 이전 달 / 다음 달 이동
-- Supabase `glucose_records` 테이블에 데이터 저장
+- 앱 화면에서 목표 범위 내 초록 / 범위 밖 빨강 / 미측정 회색
+- 현재 보고 있는 월을 `.xlsx`로 내보내기
+- Android에서 지원 시 공유/앱 선택 화면으로 Excel 또는 Google Sheets에 바로 전달
 
-## GitHub Desktop에 넣는 방법
-압축을 푼 뒤, 아래 파일들을 `glucose-log` 저장소 폴더의 최상위에 그대로 넣습니다.
+## v0.2.4 엑셀 변경
+- 사용자가 제시한 월간 혈당표 형태로 변경
+- `구분 | 월 | 화 | 수 | 목 | 금 | 토 | 일` 8열 구성
+- 주차마다 `날짜 / 아침 / 저녁` 3행 구조
+- 날짜행은 연보라색, 아침행은 연노랑, 저녁행은 흰색
+- 판정 문구 없이 수치만 표시
+- 목표 범위는 초록 글씨, 범위 밖은 빨간 글씨
+- 한 달 전체가 한 화면/한 페이지에 들어오도록 구성
 
-```text
-glucose-log/
-├─ index.html
-├─ README.md
-├─ supabase.sql
-└─ .nojekyll
-```
-
-GitHub Desktop에서 변경 파일이 보이면:
-1. Summary에 `v0.1` 입력
+## GitHub Desktop 업데이트
+압축을 풀고 기존 `glucose-log` 저장소 폴더에 파일을 덮어쓴 뒤:
+1. Summary에 `v0.2.4` 입력
 2. `Commit to main`
-3. `Publish repository` 또는 `Push origin`
+3. `Push origin`
 
-그 다음 GitHub 웹에서:
-`Settings → Pages → Deploy from a branch → main / (root) → Save`
-
-Netlify는 사용하지 않습니다.
-
-## Supabase
-앱에는 Publishable key만 들어 있습니다. `sb_secret_...` Secret key는 절대 프론트엔드 코드에 넣지 마세요.
-
-
-- 현재 보고 있는 월을 `.xlsx` 엑셀 파일로 내보내기
-
-
-## v0.2.3
-- Android에서 `엑셀 열기` 버튼을 누르면 지원 기기에서 공유/앱 선택 화면을 열어 Excel 또는 Google Sheets로 바로 넘길 수 있습니다.
-- 파일 공유를 지원하지 않는 브라우저에서는 기존 방식으로 `.xlsx` 다운로드가 자동 실행됩니다.
-
-
-## v0.2.3 변경
-- 엑셀 내보내기를 31행 목록형에서 월간 달력형(7열)으로 변경
-- 판정 문구 열 삭제
-- 아침/저녁 수치 셀만 목표 범위 초록, 범위 밖 빨강, 미입력 회색으로 표시
-- 가로 한 페이지에 맞춰 보기/인쇄하기 쉽게 정리
+GitHub Pages가 자동으로 최신 버전을 배포합니다.

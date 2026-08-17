@@ -130,86 +130,116 @@ async function exportCurrentMonth(){
   const workbook=new ExcelJS.Workbook()
   workbook.creator='Glucose Log'
   workbook.created=new Date()
-  const ws=workbook.addWorksheet(`${m+1}월 혈당`,{
-    views:[{state:'frozen',ySplit:4,showGridLines:false}]
-  })
+  const ws=workbook.addWorksheet(`${m+1}월 혈당`,{views:[{showGridLines:false}]})
 
-  // 한 화면에 들어오는 달력형 엑셀: 7열 × 주차별 3행(날짜/아침/저녁)
-  ws.mergeCells('A1:G1')
+  // 앱의 월간 달력 구조를 엑셀에서도 그대로 보이게 구성
+  ws.mergeCells('A1:H1')
   const title=ws.getCell('A1')
-  title.value=`${y}년 ${m+1}월 혈당 기록`
-  title.font={bold:true,size:18}
+  title.value=`- 혈당 기록 (${y}년 ${m+1}월) -`
+  title.font={bold:true,size:16,color:{argb:'FF111111'}}
   title.alignment={horizontal:'center',vertical:'middle'}
-  ws.getRow(1).height=28
+  ws.getRow(1).height=27
 
-  ws.mergeCells('A2:G2')
-  const guide=ws.getCell('A2')
-  guide.value='아침 식전 80–120 mg/dL   ·   저녁 식전 100–150 mg/dL'
-  guide.font={size:10,color:{argb:'FF666666'}}
+  ws.mergeCells('A3:H3')
+  const guide=ws.getCell('A3')
+  guide.value='아침 식전 80–120 mg/dL  ·  저녁 식전 100–150 mg/dL'
+  guide.font={bold:true,size:10,color:{argb:'FFFF0000'}}
   guide.alignment={horizontal:'center',vertical:'middle'}
-  ws.getRow(2).height=20
+  ws.getRow(3).height=20
 
-  const weekdays=['월','화','수','목','금','토','일']
-  weekdays.forEach((v,i)=>{
-    const c=ws.getCell(4,i+1)
+  const headerRow=6
+  const headers=['구분','월','화','수','목','금','토','일']
+  const headerFill='FFD9EAF7'
+  const dateFill='FFE8DCF2'
+  const morningFill='FFFFF6D8'
+  const white='FFFFFFFF'
+  const borderColor='FF333333'
+  const thin={style:'thin',color:{argb:borderColor}}
+  const medium={style:'medium',color:{argb:borderColor}}
+
+  headers.forEach((v,i)=>{
+    const c=ws.getCell(headerRow,i+1)
     c.value=v
-    c.font={bold:true}
+    c.font={bold:true,size:10,color:{argb:'FF111111'}}
     c.alignment={horizontal:'center',vertical:'middle'}
-    c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFE9EEF3'}}
-    c.border={bottom:{style:'thin',color:{argb:'FFB7C0C8'}}}
+    c.fill={type:'pattern',pattern:'solid',fgColor:{argb:headerFill}}
+    c.border={top:medium,bottom:medium,left:i===0?medium:thin,right:i===7?medium:thin}
   })
-  ws.getRow(4).height=22
-  for(let i=1;i<=7;i++) ws.getColumn(i).width=14
+  ws.getRow(headerRow).height=23
+  ws.getColumn(1).width=9
+  for(let i=2;i<=8;i++) ws.getColumn(i).width=11
 
-  const green='FFE2F0D9', red='FFF4CCCC', gray='FFF2F2F2', white='FFFFFFFF', dateFill='FFF7F9FB'
-  const border={
-    top:{style:'thin',color:{argb:'FFD9DEE3'}},
-    left:{style:'thin',color:{argb:'FFD9DEE3'}},
-    bottom:{style:'thin',color:{argb:'FFD9DEE3'}},
-    right:{style:'thin',color:{argb:'FFD9DEE3'}}
-  }
   const firstDay=(new Date(y,m,1).getDay()+6)%7 // 월=0
   const weekCount=Math.ceil((firstDay+days)/7)
 
   for(let w=0; w<weekCount; w++){
-    const dateRow=5+w*3, morningRow=dateRow+1, eveningRow=dateRow+2
+    const dateRow=headerRow+1+w*3
+    const morningRow=dateRow+1
+    const eveningRow=dateRow+2
     ws.getRow(dateRow).height=21
-    ws.getRow(morningRow).height=25
-    ws.getRow(eveningRow).height=25
+    ws.getRow(morningRow).height=22
+    ws.getRow(eveningRow).height=22
+
+    const labelMorning=ws.getCell(morningRow,1)
+    const labelEvening=ws.getCell(eveningRow,1)
+    labelMorning.value='아침'
+    labelEvening.value='저녁'
+    for(const c of [labelMorning,labelEvening]){
+      c.font={bold:true,size:10,color:{argb:'FF111111'}}
+      c.alignment={horizontal:'center',vertical:'middle'}
+    }
+    labelMorning.fill={type:'pattern',pattern:'solid',fgColor:{argb:morningFill}}
+    labelEvening.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
+
+    const dateLabel=ws.getCell(dateRow,1)
+    dateLabel.value=''
+    dateLabel.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
 
     for(let col=0; col<7; col++){
+      const excelCol=col+2
       const d=w*7+col-firstDay+1
-      const dc=ws.getCell(dateRow,col+1)
-      const mc=ws.getCell(morningRow,col+1)
-      const ec=ws.getCell(eveningRow,col+1)
-      for(const c of [dc,mc,ec]){
-        c.alignment={horizontal:'center',vertical:'middle'}
-        c.border=border
-      }
+      const dc=ws.getCell(dateRow,excelCol)
+      const mc=ws.getCell(morningRow,excelCol)
+      const ec=ws.getCell(eveningRow,excelCol)
 
-      if(d<1 || d>days){
+      dc.alignment=mc.alignment=ec.alignment={horizontal:'center',vertical:'middle'}
+      dc.fill={type:'pattern',pattern:'solid',fgColor:{argb:d>=1&&d<=days?dateFill:white}}
+      mc.fill={type:'pattern',pattern:'solid',fgColor:{argb:morningFill}}
+      ec.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
+
+      if(d>=1 && d<=days){
+        const key=dateKey(y,m,d), r=records.get(key)
+        const mv=r?.morning_glucose ?? null, ev=r?.evening_glucose ?? null
+        dc.value=d
+        dc.font={bold:true,size:10,color:{argb:'FF111111'}}
+        mc.value=mv==null ? '' : mv
+        ec.value=ev==null ? '' : ev
+        if(mv!=null) mc.font={bold:true,size:10,color:{argb:inMorning(mv)?'FF1E7A34':'FFFF0000'}}
+        if(ev!=null) ec.font={bold:true,size:10,color:{argb:inEvening(ev)?'FF1E7A34':'FFFF0000'}}
+      } else {
         dc.value=''; mc.value=''; ec.value=''
-        dc.fill=mc.fill=ec.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
-        continue
       }
+    }
 
-      const key=dateKey(y,m,d), r=records.get(key)
-      const mv=r?.morning_glucose ?? null, ev=r?.evening_glucose ?? null
-      dc.value=d
-      dc.font={bold:true,size:10,color:{argb:'FF555555'}}
-      dc.fill={type:'pattern',pattern:'solid',fgColor:{argb:dateFill}}
-
-      mc.value=mv==null ? '아침 —' : `아침 ${mv}`
-      ec.value=ev==null ? '저녁 —' : `저녁 ${ev}`
-      mc.font=ec.font={bold:true,size:11,color:{argb:'FF222222'}}
-      mc.fill={type:'pattern',pattern:'solid',fgColor:{argb:mv==null?gray:(mv>=80&&mv<=120?green:red)}}
-      ec.fill={type:'pattern',pattern:'solid',fgColor:{argb:ev==null?gray:(ev>=100&&ev<=150?green:red)}}
+    // 주차 블록 테두리: 바깥쪽은 굵게, 내부는 얇게
+    for(let row=dateRow; row<=eveningRow; row++){
+      for(let col=1; col<=8; col++){
+        const c=ws.getCell(row,col)
+        c.border={
+          top: row===dateRow ? medium : thin,
+          bottom: row===eveningRow ? medium : thin,
+          left: col===1 ? medium : thin,
+          right: col===8 ? medium : thin
+        }
+      }
     }
   }
 
-  ws.pageSetup={orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:1,paperSize:9,
-    margins:{left:0.25,right:0.25,top:0.4,bottom:0.4,header:0.2,footer:0.2}}
-  ws.headerFooter.oddFooter='&C혈당 기록'
+  ws.pageSetup={
+    orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:1,paperSize:9,
+    margins:{left:0.25,right:0.25,top:0.35,bottom:0.35,header:0.15,footer:0.15}
+  }
+  ws.printArea=`A1:H${headerRow+weekCount*3}`
 
   const fileName=`혈당기록_${y}-${pad(m+1)}.xlsx`
   const array=await workbook.xlsx.writeBuffer()

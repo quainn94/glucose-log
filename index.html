@@ -51,7 +51,7 @@
       <button id="monthTitle" class="monthTitle"></button>
       <button id="nextMonth" class="navButton" aria-label="다음 달">›</button>
     </div>
-    <div class="weekdayRow"><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div><div>일</div></div>
+    <div class="weekdayRow"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
     <div id="calendar" class="calendarGrid"></div>
     <div id="monthLoading" class="loadingBar hidden">기록 불러오는 중…</div>
   </section>
@@ -192,7 +192,7 @@ async function exportCurrentMonth(){
   ws.getRow(3).height=24
 
   const headerRow=5
-  const headers=['구분','월','화','수','목','금','토','일']
+  const headers=['구분','일','월','화','수','목','금','토']
   const headerFill='FFD9EAF7'
   const dateFill='FFE8DCF2'
   const morningFill='FFFFF4D6'
@@ -212,7 +212,7 @@ async function exportCurrentMonth(){
   })
   ws.getRow(headerRow).height=26
 
-  const firstDay=(new Date(y,m,1).getDay()+6)%7 // 월=0
+  const firstDay=new Date(y,m,1).getDay() // 일=0
   const weekCount=Math.ceil((firstDay+days)/7)
 
   const applyBlockBorder=(r1,c1,r2,c2)=>{
@@ -344,7 +344,7 @@ async function exportCurrentMonth(){
   ws.pageSetup={
     orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:1,paperSize:9,
     horizontalCentered:true,verticalCentered:false,
-    margins:{left:0.35,right:0.35,top:0.85,bottom:0.35,header:0.15,footer:0.15}
+    margins:{left:0.20,right:0.50,top:1.25,bottom:0.35,header:0.15,footer:0.15}
   }
   ws.printArea=`B1:I${finalSpacerRow}`
 
@@ -373,7 +373,7 @@ function pill(label,value,good){
 }
 
 function renderCalendar(){
-  const y=viewDate.getFullYear(),m=viewDate.getMonth(),days=new Date(y,m+1,0).getDate(),firstDay=new Date(y,m,1).getDay(),offset=(firstDay+6)%7
+  const y=viewDate.getFullYear(),m=viewDate.getMonth(),days=new Date(y,m+1,0).getDate(),firstDay=new Date(y,m,1).getDay(),offset=firstDay
   const cells=[]
   for(let i=0;i<offset;i++) cells.push('<div class="dayCell empty"></div>')
   const today=dateKey(now.getFullYear(),now.getMonth(),now.getDate())

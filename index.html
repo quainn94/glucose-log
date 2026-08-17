@@ -130,116 +130,163 @@ async function exportCurrentMonth(){
   const workbook=new ExcelJS.Workbook()
   workbook.creator='Glucose Log'
   workbook.created=new Date()
-  const ws=workbook.addWorksheet(`${m+1}월 혈당`,{views:[{showGridLines:false}]})
+  const ws=workbook.addWorksheet(`${m+1}월 혈당`,{views:[{showGridLines:false,zoomScale:100}]})
 
-  // 앱의 월간 달력 구조를 엑셀에서도 그대로 보이게 구성
-  ws.mergeCells('A1:H1')
-  const title=ws.getCell('A1')
+  // 사용자가 원하는 월간 기록표 모양 그대로: 제목 + 목표범위 + 주차별 날짜/아침/저녁 + 간격행
+  // A열은 여백으로 두고 B:I에 표를 배치한다.
+  ws.getColumn(1).width=3
+  ws.getColumn(2).width=9.5
+  for(let i=3;i<=9;i++) ws.getColumn(i).width=13.5
+
+  ws.mergeCells('B1:I1')
+  const title=ws.getCell('B1')
   title.value=`- 혈당 기록 (${y}년 ${m+1}월) -`
-  title.font={bold:true,size:16,color:{argb:'FF111111'}}
+  title.font={bold:true,size:18,color:{argb:'FF111111'}}
   title.alignment={horizontal:'center',vertical:'middle'}
-  ws.getRow(1).height=27
+  ws.getRow(1).height=30
 
-  ws.mergeCells('A3:H3')
-  const guide=ws.getCell('A3')
+  ws.mergeCells('B3:I3')
+  const guide=ws.getCell('B3')
   guide.value='아침 식전 80–120 mg/dL  ·  저녁 식전 100–150 mg/dL'
-  guide.font={bold:true,size:10,color:{argb:'FFFF0000'}}
+  guide.font={bold:true,size:12,color:{argb:'FFFF0000'}}
   guide.alignment={horizontal:'center',vertical:'middle'}
-  ws.getRow(3).height=20
+  ws.getRow(3).height=24
 
   const headerRow=6
   const headers=['구분','월','화','수','목','금','토','일']
   const headerFill='FFD9EAF7'
   const dateFill='FFE8DCF2'
-  const morningFill='FFFFF6D8'
+  const morningFill='FFFFF4D6'
   const white='FFFFFFFF'
-  const borderColor='FF333333'
+  const borderColor='FF111111'
   const thin={style:'thin',color:{argb:borderColor}}
   const medium={style:'medium',color:{argb:borderColor}}
 
   headers.forEach((v,i)=>{
-    const c=ws.getCell(headerRow,i+1)
+    const c=ws.getCell(headerRow,i+2)
     c.value=v
-    c.font={bold:true,size:10,color:{argb:'FF111111'}}
+    c.font={bold:true,size:12,color:{argb:'FF111111'}}
     c.alignment={horizontal:'center',vertical:'middle'}
     c.fill={type:'pattern',pattern:'solid',fgColor:{argb:headerFill}}
     c.border={top:medium,bottom:medium,left:i===0?medium:thin,right:i===7?medium:thin}
   })
-  ws.getRow(headerRow).height=23
-  ws.getColumn(1).width=9
-  for(let i=2;i<=8;i++) ws.getColumn(i).width=11
+  ws.getRow(headerRow).height=26
 
   const firstDay=(new Date(y,m,1).getDay()+6)%7 // 월=0
   const weekCount=Math.ceil((firstDay+days)/7)
 
+  const applyBlockBorder=(r1,c1,r2,c2)=>{
+    for(let r=r1;r<=r2;r++){
+      for(let c=c1;c<=c2;c++){
+        const cell=ws.getCell(r,c)
+        cell.border={
+          top:r===r1?medium:thin,
+          bottom:r===r2?medium:thin,
+          left:c===c1?medium:thin,
+          right:c===c2?medium:thin
+        }
+      }
+    }
+  }
+
   for(let w=0; w<weekCount; w++){
-    const dateRow=headerRow+1+w*3
+    const dateRow=headerRow+1+w*4
     const morningRow=dateRow+1
     const eveningRow=dateRow+2
-    ws.getRow(dateRow).height=21
-    ws.getRow(morningRow).height=22
-    ws.getRow(eveningRow).height=22
+    const spacerRow=dateRow+3
 
-    const labelMorning=ws.getCell(morningRow,1)
-    const labelEvening=ws.getCell(eveningRow,1)
-    labelMorning.value='아침'
-    labelEvening.value='저녁'
-    for(const c of [labelMorning,labelEvening]){
-      c.font={bold:true,size:10,color:{argb:'FF111111'}}
-      c.alignment={horizontal:'center',vertical:'middle'}
-    }
-    labelMorning.fill={type:'pattern',pattern:'solid',fgColor:{argb:morningFill}}
-    labelEvening.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
+    ws.getRow(dateRow).height=23
+    ws.getRow(morningRow).height=25
+    ws.getRow(eveningRow).height=25
+    ws.getRow(spacerRow).height=9
 
-    const dateLabel=ws.getCell(dateRow,1)
+    const dateLabel=ws.getCell(dateRow,2)
     dateLabel.value=''
     dateLabel.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
 
+    const labelMorning=ws.getCell(morningRow,2)
+    labelMorning.value='아침'
+    labelMorning.font={bold:true,size:12,color:{argb:'FF111111'}}
+    labelMorning.alignment={horizontal:'center',vertical:'middle'}
+    labelMorning.fill={type:'pattern',pattern:'solid',fgColor:{argb:morningFill}}
+
+    const labelEvening=ws.getCell(eveningRow,2)
+    labelEvening.value='저녁'
+    labelEvening.font={bold:true,size:12,color:{argb:'FF111111'}}
+    labelEvening.alignment={horizontal:'center',vertical:'middle'}
+    labelEvening.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
+
+    // 실제 날짜가 들어가는 칸
     for(let col=0; col<7; col++){
-      const excelCol=col+2
+      const excelCol=col+3
       const d=w*7+col-firstDay+1
       const dc=ws.getCell(dateRow,excelCol)
       const mc=ws.getCell(morningRow,excelCol)
       const ec=ws.getCell(eveningRow,excelCol)
 
       dc.alignment=mc.alignment=ec.alignment={horizontal:'center',vertical:'middle'}
-      dc.fill={type:'pattern',pattern:'solid',fgColor:{argb:d>=1&&d<=days?dateFill:white}}
-      mc.fill={type:'pattern',pattern:'solid',fgColor:{argb:morningFill}}
-      ec.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
 
       if(d>=1 && d<=days){
+        dc.fill={type:'pattern',pattern:'solid',fgColor:{argb:dateFill}}
+        mc.fill={type:'pattern',pattern:'solid',fgColor:{argb:morningFill}}
+        ec.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
+
         const key=dateKey(y,m,d), r=records.get(key)
         const mv=r?.morning_glucose ?? null, ev=r?.evening_glucose ?? null
         dc.value=d
-        dc.font={bold:true,size:10,color:{argb:'FF111111'}}
+        dc.font={bold:true,size:12,color:{argb:'FF111111'}}
         mc.value=mv==null ? '' : mv
         ec.value=ev==null ? '' : ev
-        if(mv!=null) mc.font={bold:true,size:10,color:{argb:inMorning(mv)?'FF1E7A34':'FFFF0000'}}
-        if(ev!=null) ec.font={bold:true,size:10,color:{argb:inEvening(ev)?'FF1E7A34':'FFFF0000'}}
-      } else {
+        if(mv!=null) mc.font={bold:true,size:12,color:{argb:inMorning(mv)?'FF1E7A34':'FFFF0000'}}
+        if(ev!=null) ec.font={bold:true,size:12,color:{argb:inEvening(ev)?'FF1E7A34':'FFFF0000'}}
+      }else{
         dc.value=''; mc.value=''; ec.value=''
+        dc.fill=mc.fill=ec.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
       }
     }
 
-    // 주차 블록 테두리: 바깥쪽은 굵게, 내부는 얇게
-    for(let row=dateRow; row<=eveningRow; row++){
-      for(let col=1; col<=8; col++){
-        const c=ws.getCell(row,col)
-        c.border={
-          top: row===dateRow ? medium : thin,
-          bottom: row===eveningRow ? medium : thin,
-          left: col===1 ? medium : thin,
-          right: col===8 ? medium : thin
-        }
+    // 기본 표 테두리
+    applyBlockBorder(dateRow,2,eveningRow,9)
+
+    // 월의 앞/뒤 빈 날짜 구간은 이미지처럼 큰 흰 여백으로 합쳐 내부 선을 없앤다.
+    let firstValidCol=null,lastValidCol=null
+    for(let col=0; col<7; col++){
+      const d=w*7+col-firstDay+1
+      if(d>=1 && d<=days){
+        const ec=col+3
+        if(firstValidCol==null) firstValidCol=ec
+        lastValidCol=ec
       }
     }
+    if(firstValidCol!=null && firstValidCol>3){
+      ws.mergeCells(dateRow,3,eveningRow,firstValidCol-1)
+      const blank=ws.getCell(dateRow,3)
+      blank.value=''
+      blank.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
+      blank.border={top:medium,bottom:medium,left:thin,right:medium}
+    }
+    if(lastValidCol!=null && lastValidCol<9){
+      ws.mergeCells(dateRow,lastValidCol+1,eveningRow,9)
+      const blank=ws.getCell(dateRow,lastValidCol+1)
+      blank.value=''
+      blank.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
+      blank.border={top:medium,bottom:medium,left:medium,right:medium}
+    }
+
+    // 주차 사이 간격행: 흰색 좁은 띠 + 외곽선
+    ws.mergeCells(spacerRow,2,spacerRow,9)
+    const spacer=ws.getCell(spacerRow,2)
+    spacer.value=''
+    spacer.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
+    spacer.border={top:thin,bottom:medium,left:medium,right:medium}
   }
 
   ws.pageSetup={
     orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:1,paperSize:9,
+    horizontalCentered:true,
     margins:{left:0.25,right:0.25,top:0.35,bottom:0.35,header:0.15,footer:0.15}
   }
-  ws.printArea=`A1:H${headerRow+weekCount*3}`
+  ws.printArea=`B1:I${headerRow+weekCount*4}`
 
   const fileName=`혈당기록_${y}-${pad(m+1)}.xlsx`
   const array=await workbook.xlsx.writeBuffer()
@@ -249,11 +296,8 @@ async function exportCurrentMonth(){
     try{
       await navigator.share({files:[file],title:`${y}년 ${m+1}월 혈당 기록`})
       return
-    }catch(err){
-      if(err?.name==='AbortError') return
-    }
+    }catch(e){ if(e?.name==='AbortError') return }
   }
-
   const url=URL.createObjectURL(file)
   const a=document.createElement('a')
   a.href=url
@@ -262,9 +306,7 @@ async function exportCurrentMonth(){
   a.click()
   a.remove()
   setTimeout(()=>URL.revokeObjectURL(url),1500)
-  alert('엑셀 파일을 다운로드했어요. 다운로드 알림에서 파일을 눌러 열어 주세요.')
 }
-
 function pill(label,value,good){
   if(value==null) return `<span class="valuePill missing"><i>${label}</i>—</span>`
   return `<span class="valuePill ${good?'good':'bad'}"><i>${label}</i>${value}</span>`

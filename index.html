@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <title>혈당 기록</title>
 <style>
-:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#20251f;background:#f3f5f0}*{box-sizing:border-box}body{margin:0;min-width:320px;min-height:100vh}button,input{font:inherit}.hidden{display:none!important}.center,.loginWrap{min-height:100vh;display:grid;place-items:center;padding:20px}.loginCard{width:min(420px,100%);background:#fff;border:1px solid #e2e6de;border-radius:26px;padding:32px;box-shadow:0 18px 58px #27352612}.loginIcon{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:#e8f0e7;color:#476245;font-weight:900}.loginCard h1{margin:18px 0 7px;font-size:29px}.loginCard p{margin:0 0 25px;color:#7a8178}.loginCard form,.editorCard form{display:grid;gap:17px}label{display:grid;gap:7px;font-size:13px;font-weight:800;color:#555e54}input{width:100%;border:1px solid #d9ded5;border-radius:14px;background:#fafbf8;padding:13px 14px;outline:none;font-size:16px}input:focus{border-color:#7c9279;box-shadow:0 0 0 3px #7c92791d}.primary{border:0;border-radius:15px;background:#31493a;color:#fff;padding:14px 17px;font-weight:900;cursor:pointer;font-size:15px}.primary:disabled{opacity:.55}.formActions{display:grid;gap:10px}.danger{border:1px solid #efc7c2;border-radius:15px;background:#fff6f4;color:#a33f35;padding:13px 17px;font-weight:900;cursor:pointer;font-size:14px}.danger:hover{background:#fff0ed}.danger:disabled{opacity:.5}.error{background:#fff0ee;color:#a43e34;border:1px solid #f0c9c4;padding:11px 12px;border-radius:12px;font-size:13px}.appShell{width:min(820px,calc(100% - 28px));margin:0 auto;padding:24px 0 48px}.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:17px}.eyebrow{font-size:10px;letter-spacing:.17em;font-weight:900;color:#82917e}.topbar h1{font-size:29px;margin:4px 0 0}.iconButton{border:1px solid #dce1d8;background:#fff;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:#566157;cursor:pointer;font-size:18px}.rangeGuide{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}.utilityRow{display:flex;justify-content:flex-end;margin-bottom:13px}.exportButton{border:1px solid #dce1d8;background:#fff;border-radius:12px;padding:9px 12px;color:#4f5d50;font-weight:850;font-size:12px;cursor:pointer}.exportButton:hover{background:#f8faf6}.rangeGuide>div{background:#fff;border:1px solid #e1e5de;border-radius:999px;padding:8px 11px;font-size:12px;color:#6f786e;display:flex;align-items:center;gap:6px}.rangeGuide strong{color:#343b34}.dot{width:8px;height:8px;border-radius:50%;display:inline-block}.morningDot{background:#69946a}.eveningDot{background:#6689a5}.calendarCard{background:#fff;border:1px solid #dfe4dc;border-radius:24px;padding:16px;box-shadow:0 14px 40px #2735260b}.monthHeader{display:grid;grid-template-columns:42px 1fr 42px;align-items:center;margin-bottom:13px}.navButton{border:0;background:#f4f6f1;border-radius:12px;height:40px;display:grid;place-items:center;color:#566056;cursor:pointer;font-size:26px}.monthTitle{border:0;background:transparent;font-size:21px;font-weight:950;color:#222a22;cursor:pointer}.monthPickerBackdrop{position:fixed;inset:0;background:#15201755;display:grid;place-items:center;padding:18px;z-index:20}.monthPicker{width:min(430px,100%);background:#fff;border:1px solid #dde3da;border-radius:24px;padding:18px;box-shadow:0 24px 80px #0002}.pickerHeader{display:grid;grid-template-columns:42px 1fr 42px;align-items:center;gap:8px;margin-bottom:14px}.pickerYear{border:0;background:transparent;font-size:23px;font-weight:950;color:#252d25}.yearJump{border:0;background:#f4f6f1;border-radius:12px;height:42px;font-size:24px;color:#566056;cursor:pointer}.monthGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.monthOption{border:1px solid #e1e5de;background:#fafbf8;border-radius:14px;padding:13px 6px;font-weight:900;color:#4c564c;cursor:pointer}.monthOption:hover{background:#f1f5ef}.monthOption.active{background:#31493a;color:#fff;border-color:#31493a}.pickerHint{text-align:center;margin:13px 0 0;color:#8b9289;font-size:11px}.weekdayRow,.calendarGrid{display:grid;grid-template-columns:repeat(7,1fr)}.weekdayRow>div{text-align:center;font-size:11px;font-weight:900;color:#929890;padding:8px 0}.calendarGrid{border-top:1px solid #edf0ea;border-left:1px solid #edf0ea}.dayCell{min-width:0;height:92px;border:0;border-right:1px solid #edf0ea;border-bottom:1px solid #edf0ea;background:#fff;padding:7px 5px;display:flex;flex-direction:column;align-items:stretch;cursor:pointer;text-align:left}.dayCell:hover{background:#fafbf8}.dayCell.empty{cursor:default;background:#fafbf9}.dayNumber{font-size:12px;font-weight:850;color:#596157;padding-left:2px}.dayCell.today .dayNumber{background:#31493a;color:#fff;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;padding:0}.values{display:grid;gap:4px;margin-top:auto}.valuePill{display:flex;align-items:center;justify-content:flex-start;gap:4px;width:100%;padding:4px 5px;border-radius:7px;font-size:11px;font-weight:900;white-space:nowrap;overflow:hidden}.valuePill i{font-style:normal;font-size:9px;opacity:.72}.valuePill.good{background:#e7f4e6;color:#38633b}.valuePill.bad{background:#fde9e6;color:#a33f35}.valuePill.missing{background:#f4f5f2;color:#a1a69f}.loadingBar{text-align:center;color:#8b9289;font-size:12px;padding-top:11px}.hint{text-align:center;color:#7f877e;font-size:12px;margin:13px 0 0}.modalBackdrop{position:fixed;inset:0;background:#15201766;display:grid;place-items:end center;padding:16px;z-index:10}.editorCard{width:min(500px,100%);background:#fff;border-radius:24px;padding:22px;box-shadow:0 20px 70px #0003}.editorHeader{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}.editLabel{font-size:11px;font-weight:900;color:#839080}.editorHeader h2{font-size:25px;margin:4px 0 0}.glucoseField>span{display:flex;justify-content:space-between;align-items:end}.glucoseField small{font-weight:700;color:#939a91}.numberInput{position:relative}.numberInput input{font-size:24px;font-weight:900;padding-right:75px}.numberInput b{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:11px;color:#959b93}
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#20251f;background:#f3f5f0}*{box-sizing:border-box}body{margin:0;min-width:320px;min-height:100vh}button,input{font:inherit}.hidden{display:none!important}.center,.loginWrap{min-height:100vh;display:grid;place-items:center;padding:20px}.loginCard{width:min(420px,100%);background:#fff;border:1px solid #e2e6de;border-radius:26px;padding:32px;box-shadow:0 18px 58px #27352612}.loginIcon{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:#e8f0e7;color:#476245;font-weight:900}.loginCard h1{margin:18px 0 7px;font-size:29px}.loginCard p{margin:0 0 25px;color:#7a8178}.loginCard form,.editorCard form{display:grid;gap:17px}label{display:grid;gap:7px;font-size:13px;font-weight:800;color:#555e54}input{width:100%;border:1px solid #d9ded5;border-radius:14px;background:#fafbf8;padding:13px 14px;outline:none;font-size:16px}input:focus{border-color:#7c9279;box-shadow:0 0 0 3px #7c92791d}.primary{border:0;border-radius:15px;background:#31493a;color:#fff;padding:14px 17px;font-weight:900;cursor:pointer;font-size:15px}.primary:disabled{opacity:.55}.formActions{display:grid;gap:10px}.danger{border:1px solid #efc7c2;border-radius:15px;background:#fff6f4;color:#a33f35;padding:13px 17px;font-weight:900;cursor:pointer;font-size:14px}.danger:hover{background:#fff0ed}.danger:disabled{opacity:.5}.error{background:#fff0ee;color:#a43e34;border:1px solid #f0c9c4;padding:11px 12px;border-radius:12px;font-size:13px}.appShell{width:min(820px,calc(100% - 28px));margin:0 auto;padding:24px 0 48px}.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:17px}.eyebrow{font-size:10px;letter-spacing:.17em;font-weight:900;color:#82917e}.topbar h1{font-size:29px;margin:4px 0 0}.iconButton{border:1px solid #dce1d8;background:#fff;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:#566157;cursor:pointer;font-size:18px}.rangeGuide{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}.utilityRow{display:flex;justify-content:flex-end;margin-bottom:13px}.exportButton{border:1px solid #dce1d8;background:#fff;border-radius:12px;padding:9px 12px;color:#4f5d50;font-weight:850;font-size:12px;cursor:pointer}.exportButton:hover{background:#f8faf6}.rangeGuide>div{background:#fff;border:1px solid #e1e5de;border-radius:999px;padding:8px 11px;font-size:12px;color:#6f786e;display:flex;align-items:center;gap:6px}.rangeGuide strong{color:#343b34}.dot{width:8px;height:8px;border-radius:50%;display:inline-block}.morningDot{background:#69946a}.eveningDot{background:#6689a5}.calendarCard{background:#fff;border:1px solid #dfe4dc;border-radius:24px;padding:16px;box-shadow:0 14px 40px #2735260b}.monthHeader{display:grid;grid-template-columns:42px 1fr 42px;align-items:center;margin-bottom:13px}.navButton{border:0;background:#f4f6f1;border-radius:12px;height:40px;display:grid;place-items:center;color:#566056;cursor:pointer;font-size:26px}.monthTitle{border:0;background:transparent;font-size:21px;font-weight:950;color:#222a22;cursor:pointer}.monthPickerBackdrop{position:fixed;inset:0;background:#15201755;display:grid;place-items:center;padding:18px;z-index:20}.monthPicker{width:min(430px,100%);background:#fff;border:1px solid #dde3da;border-radius:24px;padding:18px;box-shadow:0 24px 80px #0002}.pickerHeader{display:grid;grid-template-columns:42px 1fr 42px;align-items:center;gap:8px;margin-bottom:14px}.pickerYear{border:0;background:transparent;font-size:23px;font-weight:950;color:#252d25}.yearJump{border:0;background:#f4f6f1;border-radius:12px;height:42px;font-size:24px;color:#566056;cursor:pointer}.monthGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.monthOption{border:1px solid #e1e5de;background:#fafbf8;border-radius:14px;padding:13px 6px;font-weight:900;color:#4c564c;cursor:pointer}.monthOption:hover{background:#f1f5ef}.monthOption.active{background:#31493a;color:#fff;border-color:#31493a}.pickerHint{text-align:center;margin:13px 0 0;color:#8b9289;font-size:11px}.weekdayRow,.calendarGrid{display:grid;grid-template-columns:repeat(7,1fr)}.weekdayRow>div{text-align:center;font-size:11px;font-weight:900;color:#929890;padding:8px 0}.calendarGrid{border-top:1px solid #edf0ea;border-left:1px solid #edf0ea}.dayCell{min-width:0;height:92px;border:0;border-right:1px solid #edf0ea;border-bottom:1px solid #edf0ea;background:#fff;padding:7px 5px;display:flex;flex-direction:column;align-items:stretch;cursor:pointer;text-align:left}.dayCell:hover{background:#fafbf8}.dayCell.empty{cursor:default;background:#fafbf9}.dayNumber{font-size:12px;font-weight:850;color:#596157;padding-left:2px}.dayCell.today .dayNumber{background:#31493a;color:#fff;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;padding:0}.values{display:grid;gap:4px;margin-top:auto}.valuePill{display:flex;align-items:center;justify-content:flex-start;gap:4px;width:100%;padding:4px 5px;border-radius:7px;font-size:11px;font-weight:900;white-space:nowrap;overflow:hidden}.valuePill i{font-style:normal;font-size:9px;opacity:.72}.valuePill.good{background:#e7f4e6;color:#38633b}.valuePill.low{background:#f1eafd;color:#7149a3}.valuePill.high{background:#fde9e6;color:#a33f35}.valuePill.missing{background:#f4f5f2;color:#a1a69f}.weekdayRow>div:first-child{color:#c93f3f}.dayCell.sunday .dayNumber,.dayCell.holiday .dayNumber{color:#c93f3f}.dayCell.today.sunday .dayNumber,.dayCell.today.holiday .dayNumber{background:#c93f3f;color:#fff}.holidayName{font-size:8px;font-weight:900;color:#c93f3f;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:2px;margin-top:2px}.loadingBar{text-align:center;color:#8b9289;font-size:12px;padding-top:11px}.hint{text-align:center;color:#7f877e;font-size:12px;margin:13px 0 0}.modalBackdrop{position:fixed;inset:0;background:#15201766;display:grid;place-items:end center;padding:16px;z-index:10}.editorCard{width:min(500px,100%);background:#fff;border-radius:24px;padding:22px;box-shadow:0 20px 70px #0003}.editorHeader{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}.editLabel{font-size:11px;font-weight:900;color:#839080}.editorHeader h2{font-size:25px;margin:4px 0 0}.glucoseField>span{display:flex;justify-content:space-between;align-items:end}.glucoseField small{font-weight:700;color:#939a91}.numberInput{position:relative}.numberInput input{font-size:24px;font-weight:900;padding-right:75px}.numberInput b{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:11px;color:#959b93}
 @media(max-width:600px){.utilityRow{padding:0 2px}.exportButton{width:100%;padding:11px 12px}.appShell{width:100%;padding:16px 10px 34px}.topbar{padding:0 4px}.topbar h1{font-size:25px}.calendarCard{padding:10px;border-radius:20px}.dayCell{height:82px;padding:6px 3px}.valuePill{font-size:10px;padding:4px 3px;gap:3px}.valuePill i{font-size:8px}.weekdayRow>div{font-size:10px}.rangeGuide{padding:0 2px}.rangeGuide>div{font-size:11px}.modalBackdrop{padding:10px}.editorCard{border-radius:22px;padding:20px}}
 @media(max-width:380px){.dayCell{height:76px}.valuePill{font-size:9px}.valuePill i{display:none}.calendarCard{padding:8px}.monthTitle{font-size:19px}}
 </style>
@@ -103,14 +103,52 @@ let viewDate = new Date(now.getFullYear(), now.getMonth(), 1)
 let records = new Map()
 let selectedDate = null
 let pickerYearValue = viewDate.getFullYear()
+let holidayMap = new Map()
+
+const HOLIDAY_DATA_URL = 'https://cdn.jsdelivr.net/gh/hyunbinseo/holidays-kr@main/public/basic.json'
+const HOLIDAY_FALLBACK_2026 = {
+  '2026-01-01':['신정'],
+  '2026-02-16':['설날 연휴'],'2026-02-17':['설날'],'2026-02-18':['설날 연휴'],
+  '2026-03-02':['3·1절 대체공휴일'],
+  '2026-05-05':['어린이날'],'2026-05-25':['부처님 오신 날 대체공휴일'],
+  '2026-06-03':['전국동시지방선거'],
+  '2026-07-17':['제헌절'],
+  '2026-08-15':['광복절'],'2026-08-17':['광복절 대체공휴일'],
+  '2026-09-24':['추석 연휴'],'2026-09-25':['추석'],'2026-09-26':['추석 연휴'],
+  '2026-10-03':['개천절'],'2026-10-05':['개천절 대체공휴일'],'2026-10-09':['한글날'],
+  '2026-12-25':['기독탄신일']
+}
 
 function show(el, yes=true){ el.classList.toggle('hidden', !yes) }
 function setError(el, text){ el.textContent=text; show(el, !!text) }
 function inMorning(v){ return v != null && v >= 80 && v <= 120 }
 function inEvening(v){ return v != null && v >= 100 && v <= 150 }
+function glucoseStatus(v,min,max){ if(v==null) return 'missing'; if(v<min) return 'low'; if(v>max) return 'high'; return 'good' }
+function morningStatus(v){ return glucoseStatus(v,80,120) }
+function eveningStatus(v){ return glucoseStatus(v,100,150) }
+function holidayNames(key){ return holidayMap.get(key) || [] }
+function holidayLabel(key){ return holidayNames(key).join(' · ') }
+function isHolidayKey(key){ return holidayNames(key).length>0 }
+
+async function loadHolidayData(){
+  // 네트워크 오류가 있어도 2026년 기본 공휴일은 표시되도록 먼저 넣어둔다.
+  holidayMap = new Map(Object.entries(HOLIDAY_FALLBACK_2026))
+  try{
+    const res=await fetch(HOLIDAY_DATA_URL,{cache:'no-cache'})
+    if(!res.ok) return
+    const data=await res.json()
+    if(data && typeof data==='object'){
+      Object.entries(data).forEach(([key,names])=>{
+        const arr=Array.isArray(names)?names:[names]
+        holidayMap.set(key,arr.filter(Boolean).map(String))
+      })
+    }
+  }catch(e){ console.warn('공휴일 데이터를 불러오지 못해 기본 데이터로 표시합니다.',e) }
+}
 
 async function init(){
-  const {data:{session}} = await client.auth.getSession()
+  const [sessionResult] = await Promise.all([client.auth.getSession(),loadHolidayData()])
+  const {data:{session}} = sessionResult
   $('loading').classList.add('hidden')
   if(session) enterApp(); else show($('login'))
 }
@@ -193,7 +231,7 @@ async function exportCurrentMonth(){
   const headerRow=5
   const headers=['구분','일','월','화','수','목','금','토']
   const headerFill='FFD9EAF7'
-  const dateFill='FFE8DCF2'
+  const dateFill='FFF0F1F2'
   const morningFill='FFFFF4D6'
   const white='FFFFFFFF'
   const borderColor='FF111111'
@@ -204,7 +242,7 @@ async function exportCurrentMonth(){
   headers.forEach((v,i)=>{
     const c=ws.getCell(headerRow,i+1)
     c.value=v
-    c.font={bold:true,size:15,color:{argb:'FF111111'}}
+    c.font={bold:true,size:15,color:{argb:i===1?'FFC93F3F':'FF111111'}}
     c.alignment={horizontal:'center',vertical:'middle'}
     c.fill={type:'pattern',pattern:'solid',fgColor:{argb:headerFill}}
     c.border={top:thick,bottom:medium,left:i===0?thick:thin,right:i===7?thick:thin}
@@ -282,12 +320,24 @@ async function exportCurrentMonth(){
 
         const key=dateKey(y,m,d), r=records.get(key)
         const mv=r?.morning_glucose ?? null, ev=r?.evening_glucose ?? null
-        dc.value=d
-        dc.font={bold:true,size:15,color:{argb:'FF111111'}}
+        const holiday=holidayLabel(key)
+        const isSunday=new Date(y,m,d).getDay()===0
+        const dateColor=(isSunday||holiday)?'FFC93F3F':'FF111111'
+        if(holiday){
+          dc.value={richText:[
+            {font:{bold:true,size:15,color:{argb:dateColor}},text:String(d)},
+            {font:{bold:true,size:9,color:{argb:'FFC93F3F'}},text:` ${holiday}`}
+          ]}
+          dc.alignment={horizontal:'center',vertical:'middle',shrinkToFit:true}
+        }else{
+          dc.value=d
+          dc.font={bold:true,size:15,color:{argb:dateColor}}
+        }
         mc.value=mv==null ? '' : mv
         ec.value=ev==null ? '' : ev
-        if(mv!=null) mc.font={bold:true,size:15,color:{argb:inMorning(mv)?'FF1E7A34':'FFFF0000'}}
-        if(ev!=null) ec.font={bold:true,size:15,color:{argb:inEvening(ev)?'FF1E7A34':'FFFF0000'}}
+        const statusColor={good:'FF1E7A34',low:'FF7A4FC6',high:'FFFF0000'}
+        if(mv!=null) mc.font={bold:true,size:15,color:{argb:statusColor[morningStatus(mv)]}}
+        if(ev!=null) ec.font={bold:true,size:15,color:{argb:statusColor[eveningStatus(ev)]}}
       }else{
         dc.value=''; mc.value=''; ec.value=''
         dc.fill=mc.fill=ec.fill={type:'pattern',pattern:'solid',fgColor:{argb:white}}
@@ -343,7 +393,7 @@ async function exportCurrentMonth(){
   ws.pageSetup={
     orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:1,paperSize:9,
     horizontalCentered:true,verticalCentered:false,
-    margins:{left:0.3543,right:0.3543,top:1.25,bottom:0.35,header:0.15,footer:0.15}
+    margins:{left:0.3543,right:0.4331,top:1.25,bottom:0.35,header:0.15,footer:0.15}
   }
   ws.printArea=`A1:H${finalSpacerRow}`
 
@@ -366,9 +416,9 @@ async function exportCurrentMonth(){
   a.remove()
   setTimeout(()=>URL.revokeObjectURL(url),1500)
 }
-function pill(label,value,good){
+function pill(label,value,status){
   if(value==null) return `<span class="valuePill missing"><i>${label}</i>—</span>`
-  return `<span class="valuePill ${good?'good':'bad'}"><i>${label}</i>${value}</span>`
+  return `<span class="valuePill ${status}"><i>${label}</i>${value}</span>`
 }
 
 function renderCalendar(){
@@ -378,7 +428,11 @@ function renderCalendar(){
   const today=dateKey(now.getFullYear(),now.getMonth(),now.getDate())
   for(let d=1;d<=days;d++){
     const key=dateKey(y,m,d),r=records.get(key),isToday=key===today
-    cells.push(`<button class="dayCell ${isToday?'today':''}" data-day="${d}"><span class="dayNumber">${d}</span><div class="values">${pill('아',r?.morning_glucose,inMorning(r?.morning_glucose))}${pill('저',r?.evening_glucose,inEvening(r?.evening_glucose))}</div></button>`)
+    const isSunday=new Date(y,m,d).getDay()===0
+    const holiday=holidayLabel(key)
+    const classes=[isToday?'today':'',isSunday?'sunday':'',holiday?'holiday':''].filter(Boolean).join(' ')
+    const holidayHtml=holiday?`<span class="holidayName" title="${holiday}">${holiday}</span>`:''
+    cells.push(`<button class="dayCell ${classes}" data-day="${d}"><span class="dayNumber">${d}</span>${holidayHtml}<div class="values">${pill('아',r?.morning_glucose,morningStatus(r?.morning_glucose))}${pill('저',r?.evening_glucose,eveningStatus(r?.evening_glucose))}</div></button>`)
   }
   while(cells.length%7) cells.push('<div class="dayCell empty"></div>')
   $('calendar').innerHTML=cells.join('')

@@ -58,11 +58,11 @@
   </header>
 
   <details class="updateCard">
-    <summary>최신 업데이트 <span class="versionBadge">v0.4.3</span></summary>
-    <div class="updateMeta">최근 반영: 2026-08-19 18:39</div>
+    <summary>최신 업데이트 <span class="versionBadge">v0.4.4</span></summary>
+    <div class="updateMeta">최근 반영: 2026-08-19 18:45</div>
     <div class="updateHistory">
       <div class="updateVersion">
-        <b>v0.4.3</b>
+        <b>v0.4.4</b>
         <p>대체공휴일을 ‘대체’로 간단히 표시 · 엑셀 주간 공백행 제거 · 바깥/주간 테두리 굵기 정리</p>
       </div>
       <div class="updateVersion">
@@ -279,10 +279,29 @@ async function loadMonth(){
 }
 
 
+
+function circledValuePngDataUrl(value){
+  const canvas=document.createElement('canvas')
+  canvas.width=140
+  canvas.height=90
+  const ctx=canvas.getContext('2d')
+  ctx.clearRect(0,0,140,90)
+  ctx.strokeStyle='#000000'
+  ctx.lineWidth=5
+  ctx.beginPath()
+  ctx.ellipse(70,45,48,31,0,0,Math.PI*2)
+  ctx.stroke()
+  ctx.fillStyle='#7A4FC6'
+  ctx.font='700 34px Arial, sans-serif'
+  ctx.textAlign='center'
+  ctx.textBaseline='middle'
+  ctx.fillText(String(value),70,46)
+  return canvas.toDataURL('image/png')
+}
+
 async function exportCurrentMonth(){
   const y=viewDate.getFullYear(), m=viewDate.getMonth(), days=new Date(y,m+1,0).getDate()
   const workbook=new ExcelJS.Workbook()
-  const lowCircleImageId=workbook.addImage({base64:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAABQCAYAAADSm7GJAAACIklEQVR4nO2dWW7DMAwF3d7/zu1HGyBwLG/i8kjPHCAh31Qx7IrysgAAAAAAAAA8h6/sAhz4MfiMNrlUb8RC5llKZlWt6EihR5TIrkKRSlJHyOaoWlgFqSOkMpUqZrETO9OXQg1mSBSx3A81sv4KNWp9+XI9tOx63ylRe1ZgV8JRkjpCtp+M8M6GUUHsGrneFK9hFcWukek1KswzDXcQuya974hQj5rsKHZNWgbe4e419gSxa8Lz+Pb40H+Q+8le3y5P77wEI3dMqGQPwcg9JkyytWDknidEsuc1+B3kbuOei6Xg0V8dcvcZ5WOyiq0EI3cON8meP9HIvYbsfXDl3RcVmMrXawWzeu9hntusYFZvDLdz9ljBrN45TPOLug+GJBDcnBnBW9cFfp5t2Mrx1nWYFdwcBDcHwc1BcHMQ3BwENwfBzUFwc2YEm92MwwdmD5FYwc1BcHOi90XDMVL7ovnnQgy3c84YXYExkqMrrGJfpvLNmi6ET6SnC1135z8At8EByxWM5Hu4ToVE3QcjeRv3XKwFh0+wFyZk1DZ6XzSS/wibo84YXXm65NAh+azpwqdKDj8BgXOyYmh7TtaL9BPfkkjvm7MqfZDpldNmbZHrjfOibZDtJzu8EqemDyhRu0pgFd6HUKFGrS/fQOGNJwo1mCFRxAaVH4RIZSpVzIAKsmVzlC1sgJLsEtmVKHIH3j56QMmiD+D9wQAAAAAAADDiF7b/VGjBmIaxAAAAAElFTkSuQmCC',extension:'png'})
   workbook.creator='Glucose Log'
   workbook.created=new Date()
   const ws=workbook.addWorksheet(`${m+1}월 혈당`,{views:[{showGridLines:false,zoomScale:100}]})
@@ -357,7 +376,7 @@ async function exportCurrentMonth(){
     }
   }
 
-  // v0.4.3: 주차 사이 공백행 없이 날짜/아침/저녁 3행을 연속 배치한다.
+  // v0.4.4: 주차 사이 공백행 없이 날짜/아침/저녁 3행을 연속 배치한다.
   // headerRow=5 기준: 6~8행 첫 주, 9~11행 둘째 주 ... 형식.
   let lastEveningRow=headerRow
 
@@ -428,9 +447,11 @@ async function exportCurrentMonth(){
           const ms=morningStatus(mv)
           mc.font={bold:true,size:15,color:{argb:statusColor[ms]}}
           if(ms==='low'){
-            ws.addImage(lowCircleImageId,{
-              tl:{col:excelCol-1+0.22,row:morningRow-1+0.16},
-              br:{col:excelCol-1+0.78,row:morningRow-1+0.84},
+            mc.value=''
+            const lowImgId=workbook.addImage({base64:circledValuePngDataUrl(mv),extension:'png'})
+            ws.addImage(lowImgId,{
+              tl:{col:excelCol-1+0.18,row:morningRow-1+0.10},
+              br:{col:excelCol-1+0.82,row:morningRow-1+0.90},
               editAs:'oneCell'
             })
           }
@@ -439,9 +460,11 @@ async function exportCurrentMonth(){
           const es=eveningStatus(ev)
           ec.font={bold:true,size:15,color:{argb:statusColor[es]}}
           if(es==='low'){
-            ws.addImage(lowCircleImageId,{
-              tl:{col:excelCol-1+0.22,row:eveningRow-1+0.16},
-              br:{col:excelCol-1+0.78,row:eveningRow-1+0.84},
+            ec.value=''
+            const lowImgId=workbook.addImage({base64:circledValuePngDataUrl(ev),extension:'png'})
+            ws.addImage(lowImgId,{
+              tl:{col:excelCol-1+0.18,row:eveningRow-1+0.10},
+              br:{col:excelCol-1+0.82,row:eveningRow-1+0.90},
               editAs:'oneCell'
             })
           }

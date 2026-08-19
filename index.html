@@ -58,11 +58,11 @@
   </header>
 
   <details class="updateCard">
-    <summary>최신 업데이트 <span class="versionBadge">v0.4.5</span></summary>
-    <div class="updateMeta">최근 반영: 2026-08-19 18:50</div>
+    <summary>최신 업데이트 <span class="versionBadge">v0.4.6</span></summary>
+    <div class="updateMeta">최근 반영: 2026-08-19 19:58</div>
     <div class="updateHistory">
       <div class="updateVersion">
-        <b>v0.4.5</b>
+        <b>v0.4.6</b>
         <p>대체공휴일을 ‘대체’로 간단히 표시 · 엑셀 주간 공백행 제거 · 바깥/주간 테두리 굵기 정리</p>
       </div>
       <div class="updateVersion">
@@ -294,31 +294,35 @@ async function exportCurrentMonth(){
   ws.mergeCells('A1:H1')
   const title=ws.getCell('A1')
   title.value=`- 혈당 기록 (${y}년 ${m+1}월) -`
-  title.font={bold:true,size:20,color:{argb:'FF111111'}}
+  title.font={bold:true,size:26,color:{argb:'FF111111'}}
   title.alignment={horizontal:'center',vertical:'middle'}
-  ws.getRow(1).height=30
+  ws.getRow(1).height=38
 
   ws.mergeCells('A3:H3')
   const guide=ws.getCell('A3')
   guide.value='아침 식전 80–120 mg/dL  ·  저녁 식전 100–150 mg/dL'
   guide.font={bold:true,size:15,color:{argb:'FFFF0000'}}
   guide.alignment={horizontal:'center',vertical:'middle'}
+  ws.getRow(2).height=7.5
   ws.getRow(3).height=24
 
-  ws.mergeCells('A4:H4')
-  const statusGuide=ws.getCell('A4')
+  ws.mergeCells('A5:H5')
+  const statusGuide=ws.getCell('A5')
   statusGuide.value={richText:[
-    {font:{bold:true,size:10,color:{argb:'FF555555'}},text:'혈당 색상 기준  '},
-    {font:{bold:true,size:10,color:{argb:'FF1E7A34'}},text:'● 정상'},
-    {font:{bold:true,size:10,color:{argb:'FF777777'}},text:'   ·   '},
-    {font:{bold:true,size:10,color:{argb:'FFCC0000'}},text:'● 초과'},
-    {font:{bold:true,size:10,color:{argb:'FF777777'}},text:'   ·   '},
-    {font:{bold:true,size:10,color:{argb:'FF7A4FC6'}},text:'● 미만'}
+    {font:{bold:true,size:12,color:{argb:'FF555555'}},text:'( 혈당 기록 색상 :  '},
+    {font:{bold:true,size:12,color:{argb:'FF1E7A34'}},text:'● 정상'},
+    {font:{bold:true,size:12,color:{argb:'FF777777'}},text:'   ·   '},
+    {font:{bold:true,size:12,color:{argb:'FFCC0000'}},text:'● 초과'},
+    {font:{bold:true,size:12,color:{argb:'FF777777'}},text:'   ·   '},
+    {font:{bold:true,size:12,color:{argb:'FF7A4FC6'}},text:'● 미만'},
+    {font:{bold:true,size:12,color:{argb:'FF555555'}},text:' )'}
   ]}
-  statusGuide.alignment={horizontal:'left',vertical:'middle'}
-  ws.getRow(4).height=18
+  statusGuide.alignment={horizontal:'center',vertical:'middle'}
+  ws.getRow(4).height=7.5
+  ws.getRow(5).height=20
+  ws.getRow(6).height=7.5
 
-  const headerRow=5
+  const headerRow=7
   const headers=['구분','일','월','화','수','목','금','토']
   const headerFill='FFD9EAF7'
   const dateFill='FFF0F1F2'
@@ -356,8 +360,8 @@ async function exportCurrentMonth(){
     }
   }
 
-  // v0.4.5: 주차 사이 공백행 없이 날짜/아침/저녁 3행을 연속 배치한다.
-  // headerRow=5 기준: 6~8행 첫 주, 9~11행 둘째 주 ... 형식.
+  // v0.4.6: 주차 사이 공백행 없이 날짜/아침/저녁 3행을 연속 배치한다.
+  // headerRow=7 기준: 8~10행 첫 주, 11~13행 둘째 주 ... 형식.
   let lastEveningRow=headerRow
 
   for(let w=0; w<weekCount; w++){

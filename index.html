@@ -42,7 +42,7 @@ body{padding-bottom:76px}
 .bpPill{display:flex;align-items:center;gap:4px;width:100%;padding:4px 5px;border-radius:7px;font-size:10px;font-weight:900;white-space:nowrap;overflow:hidden;background:#edf3f7;color:#456276}.bpPill i{font-style:normal;font-size:8px;opacity:.72}.bpPill.missing{background:#f4f5f2;color:#a1a69f}
 .bpEditorCard{width:min(560px,100%);max-height:92vh;overflow:auto}.bpPeriod{border:1px solid #e5e9e1;border-radius:16px;padding:13px;margin-bottom:12px}.bpPeriod h3{font-size:14px;margin:0 0 10px;color:#3f493f}.bpMeasure{display:grid;grid-template-columns:34px 1fr 1fr 1fr;gap:7px;align-items:end;margin-top:8px}.bpMeasureNo{font-size:12px;font-weight:900;color:#7b847a;padding-bottom:13px}.bpMeasure label{font-size:10px;gap:4px}.bpMeasure input{padding:10px 8px;font-size:16px;font-weight:800;text-align:center}.bpUnitHint{font-size:10px;color:#8b9289;margin:-4px 0 12px}.bpAverageBox{background:#f3f6f7;border-radius:12px;padding:10px 12px;font-size:12px;color:#566157;margin-bottom:12px}.bpAverageBox b{color:#31493a}
 @media(max-width:600px){.bottomNav{height:64px}.appShell{padding-bottom:76px}.bpMeasure{grid-template-columns:28px 1fr 1fr 1fr;gap:5px}.bpMeasure input{padding:9px 4px;font-size:15px}}
-/* v0.5.1: 입력 모달이 하단 탭보다 항상 위에 오도록 수정 */
+/* v0.5.3: 아침 식전 혈당 130 mg/dL 초과부터 초과로 표시 */
 .modalBackdrop{z-index:50}
 @media(max-width:600px){.modalBackdrop{padding:10px 10px max(10px,env(safe-area-inset-bottom))}.editorCard{max-height:calc(100dvh - 20px);overflow-y:auto}}
 </style>
@@ -71,9 +71,11 @@ body{padding-bottom:76px}
   </header>
 
   <details class="updateCard">
-    <summary>최신 업데이트 <span class="versionBadge">v0.5.1</span></summary>
-    <div class="updateMeta">최근 반영: 2026-09-04</div>
+    <summary>최신 업데이트 <span class="versionBadge">v0.5.3</span></summary>
+    <div class="updateMeta">최근 반영: 2026-09-25</div>
     <div class="updateHistory">
+      <div class="updateVersion"><b>v0.5.3</b><p>아침 식전 혈당은 130 mg/dL까지 정상, 130 mg/dL 초과부터 ‘초과’로 표시하도록 기준 수정</p></div>
+      <div class="updateVersion"><b>v0.5.2</b><p>아침 식전 혈당 기준 수정</p></div>
       <div class="updateVersion"><b>v0.5.1</b><p>모바일 기록 입력창의 저장 버튼이 하단 혈당/혈압 탭에 가려지는 문제 수정</p></div>
       <div class="updateVersion"><b>v0.5.0</b><p>하단 혈당/혈압 탭 추가 · 혈압 아침/저녁 각 3회 입력 · 달력에는 아침/저녁 평균 표시</p></div>
       <div class="updateVersion">
@@ -96,7 +98,7 @@ body{padding-bottom:76px}
   </details>
 
   <section id="glucoseGuide" class="rangeGuide">
-    <div><span class="dot morningDot"></span>아침 식전 <strong>80–120</strong></div>
+    <div><span class="dot morningDot"></span>아침 식전 <strong>80–130</strong></div>
     <div><span class="dot eveningDot"></span>저녁 식전 <strong>100–150</strong></div>
   </section>
   <div id="glucoseLegend" class="statusLegend" aria-label="혈당 색상 기준">
@@ -146,7 +148,7 @@ body{padding-bottom:76px}
       <button id="closeModal" class="iconButton">×</button>
     </div>
     <form id="recordForm">
-      <label class="glucoseField"><span>아침 식전 <small>목표 80–120</small></span><div class="numberInput"><input id="morning" type="number" inputmode="numeric" min="20" max="600" placeholder="예: 108"><b>mg/dL</b></div></label>
+      <label class="glucoseField"><span>아침 식전 <small>목표 80–130</small></span><div class="numberInput"><input id="morning" type="number" inputmode="numeric" min="20" max="600" placeholder="예: 108"><b>mg/dL</b></div></label>
       <label class="glucoseField"><span>저녁 식전 <small>목표 100–150</small></span><div class="numberInput"><input id="evening" type="number" inputmode="numeric" min="20" max="600" placeholder="예: 136"><b>mg/dL</b></div></label>
       <div id="saveError" class="error hidden"></div>
       <div class="formActions">
@@ -211,10 +213,10 @@ const HOLIDAY_FALLBACK_2026 = {
 
 function show(el, yes=true){ el.classList.toggle('hidden', !yes) }
 function setError(el, text){ el.textContent=text; show(el, !!text) }
-function inMorning(v){ return v != null && v >= 80 && v <= 120 }
+function inMorning(v){ return v != null && v >= 80 && v <= 129 }
 function inEvening(v){ return v != null && v >= 100 && v <= 150 }
 function glucoseStatus(v,min,max){ if(v==null) return 'missing'; if(v<min) return 'low'; if(v>max) return 'high'; return 'good' }
-function morningStatus(v){ return glucoseStatus(v,80,120) }
+function morningStatus(v){ return glucoseStatus(v,80,130) }
 function eveningStatus(v){ return glucoseStatus(v,100,150) }
 function holidayNames(key){ return holidayMap.get(key) || [] }
 
@@ -368,7 +370,7 @@ async function exportCurrentMonth(){
 
   ws.mergeCells('A3:H3')
   const guide=ws.getCell('A3')
-  guide.value='아침 식전 80–120 mg/dL  ·  저녁 식전 100–150 mg/dL'
+  guide.value='아침 식전 80–130 mg/dL  ·  저녁 식전 100–150 mg/dL'
   guide.font={bold:true,size:15,color:{argb:'FFFF0000'}}
   guide.alignment={horizontal:'center',vertical:'middle'}
   ws.getRow(2).height=7.5
